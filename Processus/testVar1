@@ -1,0 +1,9 @@
+echo "début de script testVar1"
+var3="test 3"
+export var4="test 4"
+echo var1: $var1
+echo var2: $var2
+echo var3: $var3
+echo var4: $var4
+./testVar2
+echo "fin de script testVar1"

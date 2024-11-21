@@ -1,0 +1,55 @@
+#include "threadphilo.h"
+#include <QTextStream>
+
+ThreadPhilo::ThreadPhilo(int n)
+    : number(n)
+{
+}
+
+void ThreadPhilo::setMutex(QMutex * t)
+{
+    tabMutex = t;
+}
+
+void ThreadPhilo::setMax(int m)
+{
+    max = m;
+}
+
+void ThreadPhilo::setNumber(int n)
+{
+    number = n;
+}
+
+void ThreadPhilo::run()
+{
+    QTextStream out(stdout);
+    while (1)
+    {
+        int gauche = number - 1;
+        int droite = number + 1;
+
+        /* rapport cyclique */
+        if (gauche <    0) gauche = max - 1;
+        if (droite == max) droite =   0;
+
+        //out << "debug> gauche:" << gauche << endl;
+        //out << "debug> droite:" << droite << endl;
+
+        out << "philosophe " << number << " attend."<< endl;
+        // interbloquage probable!
+        tabMutex[gauche].lock();
+        tabMutex[droite].lock();
+
+        // pas d'interbloquage!
+        //tabMutex[gauche].tryLock(2);
+        //tabMutex[droite].trylock(2);
+
+        out << "philosophe " << number << " mange."<< endl;
+        sleep(1);
+
+        tabMutex[gauche].unlock();
+        tabMutex[droite].unlock();
+    }
+    //exec();
+}

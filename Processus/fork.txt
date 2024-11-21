@@ -1,0 +1,76 @@
+info sur fork: man 2 fork
+
+#include <sys/types.h>
+#include <unistd.h>
+
+int main()
+{
+	pid_t   pid, pidCourant;
+
+	pid = fork();
+	pidCourant = getpid();
+
+	if (pid > 0) { /* Processus père */
+		printf("processus père, pid: %i\n", pidCourant);
+		while (1); /* boucle infinie */
+	} else if (pid == 0) { /* Processus fils */
+		printf("processus fils, pid: %i\n", pidCourant);
+		while (1); /* boucle infinie */
+	}
+
+	return 0;
+}
+
+
+ligne de complition
+gcc -o fork fork.c
+
+exécution
+./fork &
+
+affichage:
+processus père, pid: 2105
+processus fils, pid: 2106
+
+afficher les processus relatif au mot fork (nom du programme).
+ps aux | grep fork
+
+affichage:
+erwann    2105 37.8  0.1  1232  320 pts/1    R    15:30   0:37 ./fork
+erwann    2106 37.8  0.1  1232  284 pts/1    R    15:30   0:37 ./fork
+erwann    2110  0.0  0.2  1840  748 pts/1    S    15:32   0:00 grep fork
+
+tuer le processus fils
+kill 2106
+ps aux | grep fork
+erwann    2105 47.1  0.1  1232  320 pts/1    R    15:35   0:07 ./fork
+erwann    2106 37.3  0.0     0    0 pts/1    Z    15:35   0:05 [fork <defunct>]
+erwann    2120  0.0  0.2  1840  748 pts/1    S    15:35   0:00 grep fork
+
+Le processus père est occupé (boucle while) et ne peut reprendre le code de retour
+Le processus fils est zombie.
+
+tuer le processus père
+kill 2105
+ps aux | grep fork
+erwann    2124  0.0  0.2  1840  748 pts/1    S    15:40   0:00 grep fork
+
+Le processus père à récupérer le code de retour avant de s'arrèter.
+
+exécution
+./fork &
+ps aux | grep fork
+erwann    2127 44.2  0.1  1232  320 pts/1    R    15:41   0:01 ./fork
+erwann    2128 44.0  0.1  1232  284 pts/1    R    15:41   0:01 ./fork
+erwann    2130  0.0  0.2  1840  748 pts/1    S    15:41   0:00 grep fork
+
+tuer le processus père
+kill 2127
+ps aux | grep fork
+root      2037  0.0  0.2  1748  752 pts/2    S    15:16   0:00 man fork
+erwann    2128 40.2  0.1  1232  284 pts/1    R    15:41   0:21 ./fork
+erwann    2132  0.0  0.2  1840  748 pts/1    S    15:42   0:00 grep fork
+
+Le processus fils vit toujours mais dépend maintenant du processus initial init pid 1
+
+

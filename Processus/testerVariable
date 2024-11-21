@@ -1,0 +1,3 @@
+echo "début de script"
+echo $maVariable
+echo "fin de script"

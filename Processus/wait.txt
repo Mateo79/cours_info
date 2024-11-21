@@ -1,0 +1,33 @@
+info sur wait: man 2 wait
+
+#include <sys/types.h>
+#include <unistd.h>
+
+int main()
+{
+	pid_t   pid, pidFils, pidCourant;
+
+	pid = fork();
+	pidCourant = getpid();
+
+	if (pid > 0) { /* Processus père */
+		printf("processus père, pid: %i\n", pidCourant);
+		pidFils = wait(NULL);
+	} else if (pid == 0) { /* Processus fils */
+		printf("processus fils, pid: %i\n", pidCourant);
+		while (1); /* boucle infinie */
+	}
+}
+./wait &
+processus fils, pid: 2307
+processus père, pid: 2306
+
+ps aux | grep wait
+erwann    2306  0.0  0.1  1232  324 pts/1    S    16:20   0:00 ./wait
+erwann    2307 23.8  0.1  1232  300 pts/1    R    16:20   0:06 ./wait
+erwann    2309  0.0  0.2  1840  748 pts/1    S    16:21   0:00 grep wait
+
+kill 2307
+ps aux | grep wait
+root      2187  0.0  0.2  1748  752 pts/2    S    15:45   0:00 man 2 wait
+erwann    2311  0.0  0.2  1840  748 pts/1    S    16:22   0:00 grep wait
